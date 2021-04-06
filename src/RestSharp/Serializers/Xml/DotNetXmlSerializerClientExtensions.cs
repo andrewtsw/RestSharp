@@ -24,12 +24,6 @@ namespace RestSharp.Serialization.Xml
         public static IRestClient UseDotNetXmlSerializer(
             this IRestClient restClient,
             string xmlNamespace = null,
-            Encoding encoding = null
-        ) => UseDotNetXmlSerializer(restClient, xmlNamespace, encoding, xmlSerializerSettings: null);
-
-        public static IRestClient UseDotNetXmlSerializer(
-            this IRestClient restClient,
-            string xmlNamespace = null,
             Encoding encoding = null,
             bool? omitXmlDeclaration = null
         )
@@ -37,14 +31,14 @@ namespace RestSharp.Serialization.Xml
             XmlWriterSettings xmlSerializerSettings = null;
             if (omitXmlDeclaration != null) xmlSerializerSettings = new XmlWriterSettings { OmitXmlDeclaration = omitXmlDeclaration.Value };
 
-            return UseDotNetXmlSerializer(restClient, xmlNamespace, encoding, xmlSerializerSettings);
+            return UseDotNetXmlSerializer(restClient, xmlSerializerSettings, xmlNamespace, encoding);
         }
 
         public static IRestClient UseDotNetXmlSerializer(
             this IRestClient restClient,
+            XmlWriterSettings xmlSerializerSettings,
             string xmlNamespace = null,
-            Encoding encoding = null,
-            XmlWriterSettings xmlSerializerSettings = null
+            Encoding encoding = null
         )
         {
             var xmlSerializer = new DotNetXmlSerializer();
