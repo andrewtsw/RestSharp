@@ -13,6 +13,7 @@
 //   limitations under the License. 
 
 using System.Text;
+using System.Xml;
 using RestSharp.Deserializers;
 using RestSharp.Serializers;
 
@@ -24,13 +25,34 @@ namespace RestSharp.Serialization.Xml
             this IRestClient restClient,
             string xmlNamespace = null,
             Encoding encoding = null
+        ) => UseDotNetXmlSerializer(restClient, xmlNamespace, encoding, xmlSerializerSettings: null);
+
+        public static IRestClient UseDotNetXmlSerializer(
+            this IRestClient restClient,
+            string xmlNamespace = null,
+            Encoding encoding = null,
+            bool? omitXmlDeclaration = null
         )
         {
-            var xmlSerializer                                 = new DotNetXmlSerializer();
-            if (xmlNamespace != null) xmlSerializer.Namespace = xmlNamespace;
-            if (encoding     != null) xmlSerializer.Encoding  = encoding;
+            XmlWriterSettings xmlSerializerSettings = null;
+            if (omitXmlDeclaration != null) xmlSerializerSettings = new XmlWriterSettings { OmitXmlDeclaration = omitXmlDeclaration.Value };
 
-            var xmlDeserializer                            = new DotNetXmlDeserializer();
+            return UseDotNetXmlSerializer(restClient, xmlNamespace, encoding, xmlSerializerSettings);
+        }
+
+        public static IRestClient UseDotNetXmlSerializer(
+            this IRestClient restClient,
+            string xmlNamespace = null,
+            Encoding encoding = null,
+            XmlWriterSettings xmlSerializerSettings = null
+        )
+        {
+            var xmlSerializer = new DotNetXmlSerializer();
+            if (xmlNamespace != null) xmlSerializer.Namespace = xmlNamespace;
+            if (encoding != null) xmlSerializer.Encoding = encoding;
+            if (xmlSerializerSettings != null) xmlSerializer.Settings = xmlSerializerSettings;
+
+            var xmlDeserializer = new DotNetXmlDeserializer();
             if (encoding != null) xmlDeserializer.Encoding = encoding;
 
             var serializer = new XmlRestSerializer()

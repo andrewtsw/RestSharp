@@ -14,6 +14,7 @@
 
 using System.IO;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 using RestSharp.Serialization.Xml;
 
@@ -61,7 +62,16 @@ namespace RestSharp.Serializers
             var serializer = new System.Xml.Serialization.XmlSerializer(obj.GetType());
             var writer     = new EncodingStringWriter(Encoding);
 
-            serializer.Serialize(writer, obj, ns);
+            if (Settings != null)
+            {
+                var xmlWriter = XmlWriter.Create(writer, Settings);
+                serializer.Serialize(xmlWriter, obj, ns);
+                xmlWriter.Flush();
+            }
+            else
+            {
+                serializer.Serialize(writer, obj, ns);
+            }
 
             return writer.ToString();
         }
@@ -85,6 +95,11 @@ namespace RestSharp.Serializers
         /// Content type for serialized content
         /// </summary>
         public string ContentType { get; set; }
+
+        /// <summary>
+        /// Xml serialization settings
+        /// </summary>
+        public XmlWriterSettings Settings { get; set; }
 
         class EncodingStringWriter : StringWriter
         {
